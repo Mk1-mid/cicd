@@ -4,67 +4,76 @@ on:
   push:
     branches:
       - main
+
 permissions:
   packages: write
   contents: read
+
+env:
+  REPO_LOWER: ghcr.io/${{ github.repository }}
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     environment: production
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Convert repository name to lowercase
+        run: |
+          echo "IMAGE_NAME=$(echo '${{ env.REPO_LOWER }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2  # Configurar el soporte para Buildx, que permite construir imágenes de manera optimizada
+        uses: docker/setup-buildx-action@v2
 
       - name: Cache Docker layers
-        uses: actions/cache@v4  # Habilitar el caching para las capas de Docker y evitar que se reconstruyan siempre
-
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2  # Hacer login en GHCR usando las credenciales de GitHub
+      - name: Login to GHCR
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.G_TOKEN }} 
-
-      - name: Convert repository name to lowercase
-        run: echo "REPO_LOWER=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
         run: |
-          # Construir la imagen Docker usando el Dockerfile
-          docker build -f Dockerfile -t ghcr.io/$REPO_LOWER:latest .
-
-          # Subir la imagen construida a GHCR
-          docker push ghcr.io/$REPO_LOWER:latest
+          docker build -f Dockerfile -t $IMAGE_NAME:latest .
+          docker push $IMAGE_NAME:latest
 
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     environment: production
+
     steps:
+      - name: Convert repository name to lowercase
+        run: |
+          echo "IMAGE_NAME=$(echo 'ghcr.io/${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v0.1.9
         with:
           host: 204.168.214.142
           username: root
-          key: nebula2000
+          key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            echo "Conexión exitosa al VPS"
+            echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u "andrescortesdev" --password-stdin
 
-            docker login ghcr.io -u "andrescortesdev" -p ${{ secrets.TOKEN}} 
-            docker pull ghcr.io/$REPO_LOWER:latest
-            docker stop ${{github.event.repository.name}} || true
-            docker rm ${{github.event.repository.name}} || true
+            docker pull $IMAGE_NAME:latest
 
-            docker run -d --name ${{ github.event.repository.name }} \
-                         -p 8090:8080 \
-                         ghcr.io/${{ github.repository }}:latest
+            docker stop ${{ github.event.repository.name }} || true
+            docker rm ${{ github.event.repository.name }} || true
+
+            docker run -d \
+              --name ${{ github.event.repository.name }} \
+              -p 8090:8080 \
+              $IMAGE_NAME:latest
