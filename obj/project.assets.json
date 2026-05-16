@@ -8,25 +8,24 @@
     "net9.0": []
   },
   "packageFolders": {
-    "/home/mk1/.nuget/packages/": {}
+    "/home/runner/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/mk1/Escritorio/laravel/CICD/CICD.csproj",
+      "projectUniqueName": "/home/runner/work/cicd/cicd/CICD.csproj",
       "projectName": "CICD",
-      "projectPath": "/home/mk1/Escritorio/laravel/CICD/CICD.csproj",
-      "packagesPath": "/home/mk1/.nuget/packages/",
-      "outputPath": "/home/mk1/Escritorio/laravel/CICD/obj/",
+      "projectPath": "/home/runner/work/cicd/cicd/CICD.csproj",
+      "packagesPath": "/home/runner/.nuget/packages/",
+      "outputPath": "/home/runner/work/cicd/cicd/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/mk1/.nuget/NuGet/NuGet.Config"
+        "/home/runner/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
-        "/usr/lib/dotnet/library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -45,7 +44,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net9.0": {
@@ -69,7 +68,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.116/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

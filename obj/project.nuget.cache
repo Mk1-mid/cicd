@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ruNuZvuqtmI=",
+  "dgSpecHash": "0DTz0SP+Yko=",
   "success": true,
-  "projectFilePath": "/home/mk1/Escritorio/laravel/CICD/CICD.csproj",
+  "projectFilePath": "/home/runner/work/cicd/cicd/CICD.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
